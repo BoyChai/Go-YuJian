@@ -1,7 +1,10 @@
 package main
 
-import "fmt"
+import (
+	"Go-YuJian/fyne"
+)
 
 func main() {
-	fmt.Printf("Hello,Go-YuJian!")
+	// fmt.Printf("Hello,Go-YuJian!")
+	fyne.Run()
 }
