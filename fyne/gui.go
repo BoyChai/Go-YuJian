@@ -59,9 +59,17 @@ func Run() {
 		),
 		// Input.Blank(),
 	)
+	// line2 := container.New(layout.NewGridLayoutWithColumns(2), Input.StatusCodeObject(), container.New(layout.NewGridLayoutWithColumns(1), Input.UserAgentObject()))
+	// line2 := container.NewHBox(Input.StatusCodeObject(), container.New(layout.NewGridLayoutWithColumns(2), Input.Blank(), Input.UserAgentObject()))
+	line2 := container.New(
+		layout.NewGridLayoutWithColumns(3),
+		Input.StatusCodeObject(),
+		Input.RefererObject(),
+		Input.CookieObject(),
+	)
 
 	// 组件加载到窗口
-	window.SetContent(container.NewVBox(line1))
+	window.SetContent(container.NewVBox(line1, line2))
 
 	window.ShowAndRun()
 }
