@@ -68,8 +68,14 @@ func Run() {
 		Input.CookieObject(),
 	)
 
+	line3 := container.New(
+		layout.NewGridLayoutWithColumns(2),
+		Input.ListObject(),
+		Input.Blank(),
+	)
+
 	// 组件加载到窗口
-	window.SetContent(container.NewVBox(line1, line2))
+	window.SetContent(container.NewVBox(line1, line2, line3))
 
 	window.ShowAndRun()
 }

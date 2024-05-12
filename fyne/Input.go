@@ -1,9 +1,13 @@
 package fyne
 
 import (
+	"image/color"
+
 	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/layout"
+	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 )
 
@@ -78,6 +82,38 @@ func (i *input) RefererObject() fyne.CanvasObject {
 	in := widget.NewEntry()
 	i.Referer = &in.Text
 	return container.New(layout.NewFormLayout(), label, in)
+}
+
+// List
+func (i *input) ListObject() fyne.CanvasObject {
+	data := []string{"jsp.txt", "php.txt", "java.txt", "aspx.txt", "web_path.txt"}
+	label := widget.NewLabel("Dict List:")
+	in := widget.NewList(
+		func() int {
+			return len(data)
+		},
+		func() fyne.CanvasObject {
+			return container.NewHBox(widget.NewCheck("", func(bool) {}), widget.NewIcon(theme.DocumentIcon()), widget.NewLabel("Template Object"))
+		},
+		func(id widget.ListItemID, item fyne.CanvasObject) {
+			item.(*fyne.Container).Objects[2].(*widget.Label).SetText(data[id])
+		},
+	)
+	// 设置容器的最小尺寸
+	inScroller := container.NewVScroll(in)
+	inScroller.SetMinSize(fyne.NewSize(in.MinSize().Width, 150))
+
+	// 创建背景矩形，这里使用浅灰色
+	bgColor := color.NRGBA{R: 240, G: 240, B: 240, A: 255}
+	background := canvas.NewRectangle(bgColor)
+	background.SetMinSize(fyne.NewSize(inScroller.MinSize().Width, 150))
+
+	// 创建一个包含列表和背景的容器
+	listWithBackground := container.NewStack()
+	listWithBackground.Add(background)
+	listWithBackground.Add(inScroller)
+	return container.New(layout.NewVBoxLayout(), label, listWithBackground)
+
 }
 
 // Blank
