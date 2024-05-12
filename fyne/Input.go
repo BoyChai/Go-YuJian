@@ -26,7 +26,9 @@ func (i *input) UrlObject() fyne.CanvasObject {
 // Thread
 func (i *input) ThreadObject() fyne.CanvasObject {
 	label := widget.NewLabel("线程:")
-	in := widget.NewEntry()
+	// in := widget.NewEntry()
+	in := widget.NewSelectEntry([]string{"1", "2", "4", "8", "16", "32", "64", "128", "256", "512", "1024", "2048", "4096"})
+	in.SetText("8")
 	i.Thread = &in.Text
 	// return container.New(layout.NewHBoxLayout(), label, in)
 	return container.New(layout.NewFormLayout(), label, in)
@@ -36,7 +38,8 @@ func (i *input) ThreadObject() fyne.CanvasObject {
 // Timeout
 func (i *input) TimeoutObject() fyne.CanvasObject {
 	label := widget.NewLabel("超时/s:")
-	in := widget.NewEntry()
+	in := widget.NewSelectEntry([]string{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"})
+	in.SetText("5")
 	i.Timeout = &in.Text
 	return container.New(layout.NewFormLayout(), label, in)
 }
