@@ -47,12 +47,17 @@ func Run() {
 		layout.NewGridLayout(3),
 		Input.UrlObject(),
 		container.New(
-			layout.NewGridLayoutWithColumns(3),
+			layout.NewGridLayoutWithColumns(2),
 			Input.ThreadObject(),
 			Input.TimeoutObject(),
-			Input.Blank(),
+			// Input.Blank(),
 		),
-		Input.Blank(),
+		container.New(
+			layout.NewGridLayoutWithColumns(2),
+			Btn.StartObject(),
+			Btn.StopObject(),
+		),
+		// Input.Blank(),
 	)
 
 	// 组件加载到窗口
