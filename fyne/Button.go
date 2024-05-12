@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 )
 
@@ -16,7 +17,7 @@ var Btn btn
 
 // Start
 func (b *btn) StartObject() fyne.CanvasObject {
-	b.Start = widget.NewButton("开始", func() {
+	b.Start = widget.NewButtonWithIcon("开始", theme.RadioButtonCheckedIcon(), func() {
 		fmt.Println("开始")
 	})
 	return b.Start
@@ -24,7 +25,7 @@ func (b *btn) StartObject() fyne.CanvasObject {
 
 // Stop
 func (b *btn) StopObject() fyne.CanvasObject {
-	b.Stop = widget.NewButton("停止", func() {
+	b.Stop = widget.NewButtonWithIcon("停止", theme.ContentClearIcon(), func() {
 		fmt.Println("停止")
 	})
 	return b.Stop
