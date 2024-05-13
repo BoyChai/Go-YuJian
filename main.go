@@ -2,6 +2,7 @@ package main
 
 import (
 	"Go-YuJian/fyne"
+	_ "Go-YuJian/io"
 )
 
 func main() {

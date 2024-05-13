@@ -87,17 +87,21 @@ func (i *input) RefererObject() fyne.CanvasObject {
 
 // DictList
 func (i *input) DictListObject() fyne.CanvasObject {
-	data := []string{"jsp.txt", "php.txt", "java.txt", "aspx.txt", "web_path.txt"}
 	label := widget.NewLabel("Dict List:")
 	in := widget.NewList(
 		func() int {
-			return len(data)
+			return len(DictList)
 		},
 		func() fyne.CanvasObject {
 			return container.NewHBox(widget.NewCheck("", func(bool) {}), widget.NewIcon(theme.DocumentIcon()), widget.NewLabel("Template Object"))
 		},
 		func(id widget.ListItemID, item fyne.CanvasObject) {
-			item.(*fyne.Container).Objects[2].(*widget.Label).SetText(data[id])
+			check := item.(*fyne.Container).Objects[0].(*widget.Check)
+			check.SetChecked(DictList[id].Active)
+			check.OnChanged = func(b bool) {
+				DictList[id].Active = b
+			}
+			item.(*fyne.Container).Objects[2].(*widget.Label).SetText(DictList[id].Name)
 		},
 	)
 	// 设置容器的最小尺寸

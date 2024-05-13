@@ -1,5 +1,7 @@
 package fyne
 
+var DictList []Dict
+
 var Data []Output
 
 func init() {
