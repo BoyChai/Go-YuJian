@@ -6,8 +6,10 @@ type Dict struct {
 }
 
 type Output struct {
-	Dict string
-	Code string
-	Size string
-	URL  string
+	Dict      string
+	Method    string
+	UserAgent string
+	Code      string
+	Size      string
+	URL       string
 }

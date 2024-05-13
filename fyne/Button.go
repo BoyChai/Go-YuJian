@@ -24,7 +24,7 @@ func (b *btn) StartObject() fyne.CanvasObject {
 		fmt.Println("状态码:", Input.StatusCode)
 		fmt.Println("Referer:", *Input.Referer)
 		fmt.Println("Cookie:", *Input.Cookie)
-		fmt.Println("指纹:", Input.Fingerprint)
+		fmt.Println("指纹:", Input.UserAgent)
 		fmt.Println("方法:", Input.Method)
 		fmt.Println("DictList:", Input.DictList)
 		fmt.Println("开始")

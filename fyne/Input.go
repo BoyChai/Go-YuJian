@@ -13,16 +13,15 @@ import (
 )
 
 type input struct {
-	URL         *string
-	Thread      *string
-	Timeout     *string
-	StatusCode  []string
-	UserAgent   *string
-	Cookie      *string
-	Referer     *string
-	Fingerprint []string
-	Method      []string
-	DictList    []Dict
+	URL        *string
+	Thread     *string
+	Timeout    *string
+	StatusCode []string
+	Cookie     *string
+	Referer    *string
+	UserAgent  []string
+	Method     []string
+	DictList   []Dict
 }
 
 var Input input
@@ -62,14 +61,6 @@ func (i *input) StatusCodeObject() fyne.CanvasObject {
 	in := widget.NewCheckGroup([]string{"2xx", "3xx", "4xx", "5xx"}, func(s []string) { i.StatusCode = s })
 	in.SetSelected([]string{"2xx"})
 	in.Horizontal = true
-	return container.New(layout.NewFormLayout(), label, in)
-}
-
-// UserAgent
-func (i *input) UserAgentObject() fyne.CanvasObject {
-	label := widget.NewLabel("User-Agent:")
-	in := widget.NewEntry()
-	i.UserAgent = &in.Text
 	return container.New(layout.NewFormLayout(), label, in)
 }
 
@@ -126,9 +117,18 @@ func (i *input) DictListObject() fyne.CanvasObject {
 }
 
 // Fingerprint
-func (i *input) FingerprintObject() fyne.CanvasObject {
+// func (i *input) FingerprintObject() fyne.CanvasObject {
+// 	label := widget.NewLabel("指纹:")
+// 	in := widget.NewCheckGroup([]string{"Default", "Google", "Edge", "Firefox"}, func(s []string) { i.Fingerprint = s })
+// 	in.SetSelected([]string{"Default"})
+// 	in.Horizontal = true
+// 	return container.New(layout.NewFormLayout(), label, in)
+// }
+
+// UserAgent
+func (i *input) UserAgentObject() fyne.CanvasObject {
 	label := widget.NewLabel("指纹:")
-	in := widget.NewCheckGroup([]string{"Default", "Google", "Edge", "Firefox"}, func(s []string) { i.Fingerprint = s })
+	in := widget.NewCheckGroup([]string{"Default", "Google", "Edge", "Firefox"}, func(s []string) { i.UserAgent = s })
 	in.SetSelected([]string{"Default"})
 	in.Horizontal = true
 	return container.New(layout.NewFormLayout(), label, in)
@@ -147,7 +147,7 @@ func (i *input) MethodObject() fyne.CanvasObject {
 func (i *input) OtherSettingsObject() fyne.CanvasObject {
 	label := widget.NewLabel("Other Settings:")
 	//
-	in := container.NewScroll(container.NewVBox(i.FingerprintObject(), i.MethodObject()))
+	in := container.NewScroll(container.NewVBox(i.UserAgentObject(), i.MethodObject()))
 
 	// 设置容器的最小尺寸
 	inScroller := container.NewVScroll(in)
@@ -160,7 +160,7 @@ func (i *input) OtherSettingsObject() fyne.CanvasObject {
 func (i *input) OutputObject() fyne.CanvasObject {
 	in := widget.NewTable(nil, nil, nil)
 	in.Length = func() (rows int, cols int) {
-		return len(Data) + 2, 5
+		return len(Data) + 2, 7
 	}
 	in.CreateCell = func() fyne.CanvasObject {
 		return widget.NewLabel(" ")
@@ -182,10 +182,14 @@ func (i *input) OutputObject() fyne.CanvasObject {
 			case 1:
 				label.SetText("Dict")
 			case 2:
-				label.SetText("Code")
+				label.SetText("Method")
 			case 3:
-				label.SetText("Size")
+				label.SetText("Agent")
 			case 4:
+				label.SetText("Code")
+			case 5:
+				label.SetText("Size")
+			case 6:
 				label.SetText("URL")
 			}
 			return
@@ -197,10 +201,14 @@ func (i *input) OutputObject() fyne.CanvasObject {
 		case 1:
 			label.SetText(Data[id.Row-1].Dict)
 		case 2:
-			label.SetText(Data[id.Row-1].Code)
+			label.SetText(Data[id.Row-1].Method)
 		case 3:
-			label.SetText(Data[id.Row-1].Size)
+			label.SetText(Data[id.Row-1].UserAgent)
 		case 4:
+			label.SetText(Data[id.Row-1].Code)
+		case 5:
+			label.SetText(Data[id.Row-1].Size)
+		case 6:
 			label.SetText(Data[id.Row-1].URL)
 		}
 
@@ -209,7 +217,9 @@ func (i *input) OutputObject() fyne.CanvasObject {
 	in.SetColumnWidth(1, 90)
 	in.SetColumnWidth(2, 50)
 	in.SetColumnWidth(3, 50)
-	in.SetColumnWidth(4, 640)
+	in.SetColumnWidth(4, 50)
+	in.SetColumnWidth(5, 50)
+	in.SetColumnWidth(6, 530)
 	// 设置容器的最小尺寸
 	inScroller := container.NewVScroll(in)
 	inScroller.SetMinSize(fyne.NewSize(in.MinSize().Width, 260))
