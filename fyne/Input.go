@@ -13,13 +13,16 @@ import (
 )
 
 type input struct {
-	URL        *string
-	Thread     *string
-	Timeout    *string
-	StatusCode []string
-	UserAgent  *string
-	Cookie     *string
-	Referer    *string
+	URL         *string
+	Thread      *string
+	Timeout     *string
+	StatusCode  []string
+	UserAgent   *string
+	Cookie      *string
+	Referer     *string
+	Fingerprint []string
+	Method      []string
+	DictList    []Dict
 }
 
 var Input input
@@ -57,6 +60,7 @@ func (i *input) TimeoutObject() fyne.CanvasObject {
 func (i *input) StatusCodeObject() fyne.CanvasObject {
 	label := widget.NewLabel("状态码:")
 	in := widget.NewCheckGroup([]string{"2xx", "3xx", "4xx", "5xx"}, func(s []string) { i.StatusCode = s })
+	in.SetSelected([]string{"2xx"})
 	in.Horizontal = true
 	return container.New(layout.NewFormLayout(), label, in)
 }
@@ -65,7 +69,7 @@ func (i *input) StatusCodeObject() fyne.CanvasObject {
 func (i *input) UserAgentObject() fyne.CanvasObject {
 	label := widget.NewLabel("User-Agent:")
 	in := widget.NewEntry()
-	i.URL = &in.Text
+	i.UserAgent = &in.Text
 	return container.New(layout.NewFormLayout(), label, in)
 }
 
@@ -90,18 +94,18 @@ func (i *input) DictListObject() fyne.CanvasObject {
 	label := widget.NewLabel("Dict List:")
 	in := widget.NewList(
 		func() int {
-			return len(DictList)
+			return len(i.DictList)
 		},
 		func() fyne.CanvasObject {
 			return container.NewHBox(widget.NewCheck("", func(bool) {}), widget.NewIcon(theme.DocumentIcon()), widget.NewLabel("Template Object"))
 		},
 		func(id widget.ListItemID, item fyne.CanvasObject) {
 			check := item.(*fyne.Container).Objects[0].(*widget.Check)
-			check.SetChecked(DictList[id].Active)
+			check.SetChecked(i.DictList[id].Active)
 			check.OnChanged = func(b bool) {
-				DictList[id].Active = b
+				i.DictList[id].Active = b
 			}
-			item.(*fyne.Container).Objects[2].(*widget.Label).SetText(DictList[id].Name)
+			item.(*fyne.Container).Objects[2].(*widget.Label).SetText(i.DictList[id].Name)
 		},
 	)
 	// 设置容器的最小尺寸
@@ -124,7 +128,7 @@ func (i *input) DictListObject() fyne.CanvasObject {
 // Fingerprint
 func (i *input) FingerprintObject() fyne.CanvasObject {
 	label := widget.NewLabel("指纹:")
-	in := widget.NewCheckGroup([]string{"Default", "Google", "Edge", "Firefox"}, func(s []string) {})
+	in := widget.NewCheckGroup([]string{"Default", "Google", "Edge", "Firefox"}, func(s []string) { i.Fingerprint = s })
 	in.SetSelected([]string{"Default"})
 	in.Horizontal = true
 	return container.New(layout.NewFormLayout(), label, in)
@@ -133,7 +137,7 @@ func (i *input) FingerprintObject() fyne.CanvasObject {
 // Method
 func (i *input) MethodObject() fyne.CanvasObject {
 	label := widget.NewLabel("Method:")
-	in := widget.NewCheckGroup([]string{"GET", "POST", "DELETE", "PUT"}, func(s []string) {})
+	in := widget.NewCheckGroup([]string{"GET", "POST", "DELETE", "PUT"}, func(s []string) { i.Method = s })
 	in.SetSelected([]string{"GET"})
 	in.Horizontal = true
 	return container.New(layout.NewFormLayout(), label, in)

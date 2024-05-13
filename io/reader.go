@@ -15,7 +15,7 @@ func init() {
 
 	for _, d := range dicts {
 		if strings.HasSuffix(d.Name(), ".txt") {
-			fyne.DictList = append(fyne.DictList, fyne.Dict{
+			fyne.Input.DictList = append(fyne.Input.DictList, fyne.Dict{
 				Active: true,
 				Name:   d.Name(),
 			})
