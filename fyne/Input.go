@@ -84,8 +84,8 @@ func (i *input) RefererObject() fyne.CanvasObject {
 	return container.New(layout.NewFormLayout(), label, in)
 }
 
-// List
-func (i *input) ListObject() fyne.CanvasObject {
+// DictList
+func (i *input) DictListObject() fyne.CanvasObject {
 	data := []string{"jsp.txt", "php.txt", "java.txt", "aspx.txt", "web_path.txt"}
 	label := widget.NewLabel("Dict List:")
 	in := widget.NewList(
@@ -114,6 +114,37 @@ func (i *input) ListObject() fyne.CanvasObject {
 	listWithBackground.Add(inScroller)
 	return container.New(layout.NewVBoxLayout(), label, listWithBackground)
 
+}
+
+// Fingerprint
+func (i *input) FingerprintObject() fyne.CanvasObject {
+	label := widget.NewLabel("指纹:")
+	in := widget.NewCheckGroup([]string{"Default", "Google", "Edge", "Firefox"}, func(s []string) {})
+	in.SetSelected([]string{"Default"})
+	in.Horizontal = true
+	return container.New(layout.NewFormLayout(), label, in)
+}
+
+// Method
+func (i *input) MethodObject() fyne.CanvasObject {
+	label := widget.NewLabel("Method:")
+	in := widget.NewCheckGroup([]string{"GET", "POST", "DELETE", "PUT"}, func(s []string) {})
+	in.SetSelected([]string{"GET"})
+	in.Horizontal = true
+	return container.New(layout.NewFormLayout(), label, in)
+}
+
+// OtherSettings
+func (i *input) OtherSettingsObject() fyne.CanvasObject {
+	label := widget.NewLabel("Other Settings:")
+	//
+	in := container.NewScroll(container.NewVBox(i.FingerprintObject(), i.MethodObject()))
+
+	// 设置容器的最小尺寸
+	inScroller := container.NewVScroll(in)
+	inScroller.SetMinSize(fyne.NewSize(in.MinSize().Width, 150))
+
+	return container.New(layout.NewVBoxLayout(), label, inScroller)
 }
 
 // Blank

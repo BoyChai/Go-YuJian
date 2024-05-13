@@ -70,8 +70,8 @@ func Run() {
 
 	line3 := container.New(
 		layout.NewGridLayoutWithColumns(2),
-		Input.ListObject(),
-		Input.Blank(),
+		Input.DictListObject(),
+		Input.OtherSettingsObject(),
 	)
 
 	// 组件加载到窗口
