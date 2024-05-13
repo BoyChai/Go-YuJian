@@ -73,9 +73,10 @@ func Run() {
 		Input.DictListObject(),
 		Input.OtherSettingsObject(),
 	)
+	line4 := Input.OutputObject()
 
 	// 组件加载到窗口
-	window.SetContent(container.NewVBox(line1, line2, line3))
+	window.SetContent(container.NewVBox(line1, line2, line3, line4))
 
 	window.ShowAndRun()
 }

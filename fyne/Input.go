@@ -1,6 +1,7 @@
 package fyne
 
 import (
+	"fmt"
 	"image/color"
 
 	"fyne.io/fyne/v2"
@@ -145,6 +146,67 @@ func (i *input) OtherSettingsObject() fyne.CanvasObject {
 	inScroller.SetMinSize(fyne.NewSize(in.MinSize().Width, 150))
 
 	return container.New(layout.NewVBoxLayout(), label, inScroller)
+}
+
+// Output
+func (i *input) OutputObject() fyne.CanvasObject {
+	in := widget.NewTable(nil, nil, nil)
+	in.Length = func() (rows int, cols int) {
+		return len(Data) + 2, 5
+	}
+	in.CreateCell = func() fyne.CanvasObject {
+		return widget.NewLabel(" ")
+
+	}
+	in.UpdateCell = func(id widget.TableCellID, template fyne.CanvasObject) {
+
+		label := template.(*widget.Label)
+		// 最后一行跳过渲染
+		if id.Row == len(Data)+1 {
+			label.SetText("")
+			return
+		}
+		// 设置表头内容
+		if id.Row == 0 {
+			switch id.Col {
+			case 0:
+				label.SetText("ID")
+			case 1:
+				label.SetText("Dict")
+			case 2:
+				label.SetText("Code")
+			case 3:
+				label.SetText("Size")
+			case 4:
+				label.SetText("URL")
+			}
+			return
+		}
+
+		switch id.Col {
+		case 0:
+			label.SetText(fmt.Sprint(id.Row - 1))
+		case 1:
+			label.SetText(Data[id.Row-1].Dict)
+		case 2:
+			label.SetText(Data[id.Row-1].Code)
+		case 3:
+			label.SetText(Data[id.Row-1].Size)
+		case 4:
+			label.SetText(Data[id.Row-1].URL)
+		}
+
+	}
+	in.SetColumnWidth(0, 50)
+	in.SetColumnWidth(1, 90)
+	in.SetColumnWidth(2, 50)
+	in.SetColumnWidth(3, 50)
+	in.SetColumnWidth(4, 640)
+	// 设置容器的最小尺寸
+	inScroller := container.NewVScroll(in)
+	inScroller.SetMinSize(fyne.NewSize(in.MinSize().Width, 260))
+
+	return container.New(layout.NewVBoxLayout(), inScroller)
 }
 
 // Blank
