@@ -22,6 +22,7 @@ type input struct {
 	UserAgent  []string
 	Method     []string
 	DictList   []Dict
+	output     *widget.Table
 }
 
 var Input input
@@ -159,6 +160,7 @@ func (i *input) OtherSettingsObject() fyne.CanvasObject {
 // Output
 func (i *input) OutputObject() fyne.CanvasObject {
 	in := widget.NewTable(nil, nil, nil)
+	i.output = in
 	in.Length = func() (rows int, cols int) {
 		return len(Data) + 2, 7
 	}
@@ -231,4 +233,8 @@ func (i *input) OutputObject() fyne.CanvasObject {
 func (i *input) Blank() fyne.CanvasObject {
 	label := widget.NewLabel("")
 	return label
+}
+
+func (i *input) RefreshOutput() {
+	i.output.Refresh()
 }

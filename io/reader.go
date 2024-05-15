@@ -86,3 +86,8 @@ func (d *dict) open() {
 		d.end = false
 	}
 }
+
+// 当前使用的字典名称
+func (d *dict) GetDictName() string {
+	return d.activeDict[d.index]
+}
