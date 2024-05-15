@@ -3,22 +3,35 @@ package control
 import (
 	"Go-YuJian/fyne"
 	io2 "Go-YuJian/io"
+	"io"
+	"log"
+	"time"
 
 	"fmt"
-	"io"
 	"net/http"
 	"strconv"
 )
+
+// 通道
+var wrStatus bool
+var w chan workCfg
+var r chan workResults
+var stopChan chan struct{}
 
 var dict = io2.Dict
 
 func StartWork() {
 	// 激活字典
 	dict.Active()
-	//创建端口通道并初始化，存有缓存线程数
-	w := make(chan workCfg)
+	// 启动通道
+	wrStatus = true
+	// 创建端口通道并初始化，存有缓存线程数
+	w = make(chan workCfg)
 	// 定义返回端口的通道
-	r := make(chan workResults)
+	r = make(chan workResults)
+	// 停止通道
+	stopChan = make(chan struct{})
+
 	// 获取线程数
 	thread, err := strconv.Atoi(*fyne.Input.Thread)
 	if err != nil {
@@ -26,79 +39,101 @@ func StartWork() {
 	}
 	// 创建缓存线程
 	for i := 0; i < thread; i++ {
-		go work(w, r)
+		// go work(w, r)
+		go work()
 	}
 	// 向缓存中提交任务
 	go func() {
 		for i := 0; i < int(dict.GetDictLine()); i++ {
-			url := getURL()
-			dictName := dict.GetDictName()
-			for _, method := range fyne.Input.Method {
-				w <- workCfg{
-					Method: method,
-					URL:    url,
-					Dict:   dictName,
+			select {
+			case <-stopChan:
+				// 停止输入
+				return
+			default:
+				url := getURL()
+				dictName := dict.GetDictName()
+				for _, method := range fyne.Input.Method {
+					w <- workCfg{
+						Method: method,
+						URL:    url,
+						Dict:   dictName,
+					}
 				}
 			}
 		}
-
 	}()
 	// 拿值
 	for i := 0; i < int(dict.GetDictLine())*len(fyne.Input.Method); i++ {
-		results := <-r
+		results, ok := <-r
+		if !ok {
+			break
+		}
 		if results.IsTrue {
 			fyne.Data = append(fyne.Data, results.Output)
 			fyne.Input.RefreshOutput()
 		}
 	}
-	close(w)
-	close(r)
+	closeWR()
 }
 
-func work(cfg chan workCfg, result chan workResults) {
-	for c := range cfg {
-		req, err := http.NewRequest(c.Method, c.URL, nil)
-		if err != nil {
-			panic(err)
-		}
-		req.Header.Set("Referer", *fyne.Input.Referer)
-		req.Header.Set("Cookie", *fyne.Input.Cookie)
-		agent, agentType := c.getUserAgent(fyne.Input.UserAgent)
-		req.Header.Set("User-Agent", agent)
-
-		resp, err := http.DefaultClient.Do(req)
-		if err != nil {
-			panic(err)
-		}
-		defer func() { _ = resp.Body.Close() }()
-		if err != nil {
-			panic(err)
-		}
-		found := false
-		for _, code := range fyne.Input.StatusCode {
-			if fmt.Sprint(resp.StatusCode)[:1] == fmt.Sprint(code)[:1] {
-				bodyBytes, err := io.ReadAll(resp.Body)
-				if err != nil {
-					panic(err)
-				}
-				result <- workResults{
-					IsTrue: true,
-					Output: fyne.Output{
-						Code:      fmt.Sprint(resp.StatusCode),
-						Method:    c.Method,
-						Size:      fmt.Sprint(len(bodyBytes)),
-						URL:       c.URL,
-						UserAgent: agentType,
-						Dict:      c.Dict,
-					},
-				}
-				found = true
-				break
+// func work(cfg chan workCfg, result chan workResults) {
+func work() {
+	timeout, err := strconv.Atoi(*fyne.Input.Timeout)
+	if err != nil {
+		log.Fatal(err)
+	}
+	client := &http.Client{
+		Timeout: time.Duration(timeout) * time.Second,
+	}
+	for c := range w {
+		select {
+		case <-stopChan:
+			// 停止工作
+			return
+		default:
+			req, err := http.NewRequest(c.Method, c.URL, nil)
+			if err != nil {
+				panic(err)
 			}
-		}
-		if !found {
-			result <- workResults{
-				IsTrue: false,
+			req.Header.Set("Referer", *fyne.Input.Referer)
+			req.Header.Set("Cookie", *fyne.Input.Cookie)
+			agent, agentType := c.getUserAgent(fyne.Input.UserAgent)
+			req.Header.Set("User-Agent", agent)
+
+			resp, err := client.Do(req)
+			if err != nil {
+				panic(err)
+			}
+			defer func() { _ = resp.Body.Close() }()
+			if err != nil {
+				panic(err)
+			}
+			found := false
+			for _, code := range fyne.Input.StatusCode {
+				if fmt.Sprint(resp.StatusCode)[:1] == fmt.Sprint(code)[:1] {
+					bodyBytes, err := io.ReadAll(resp.Body)
+					if err != nil {
+						panic(err)
+					}
+					r <- workResults{
+						IsTrue: true,
+						Output: fyne.Output{
+							Code:      fmt.Sprint(resp.StatusCode),
+							Method:    c.Method,
+							Size:      fmt.Sprint(len(bodyBytes)),
+							URL:       c.URL,
+							UserAgent: agentType,
+							Dict:      c.Dict,
+						},
+					}
+					found = true
+					break
+				}
+			}
+			if !found {
+				r <- workResults{
+					IsTrue: false,
+				}
 			}
 		}
 	}
@@ -107,4 +142,19 @@ func work(cfg chan workCfg, result chan workResults) {
 func getURL() string {
 	dict.Next()
 	return fmt.Sprint(*fyne.Input.URL, dict.Value)
+}
+
+func StopWork() {
+	close(stopChan)
+	time.Sleep(1 * time.Second)
+	closeWR()
+}
+
+// 关闭写入和返回通道
+func closeWR() {
+	wrStatus = false
+	if wrStatus {
+		close(w)
+		close(r)
+	}
 }
