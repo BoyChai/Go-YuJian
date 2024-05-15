@@ -37,5 +37,6 @@ func (b *btn) StopObject() fyne.CanvasObject {
 	b.Stop = widget.NewButtonWithIcon("停止", theme.ContentClearIcon(), func() {
 		fmt.Println("停止")
 	})
+	b.Stop.Disable()
 	return b.Stop
 }

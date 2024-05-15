@@ -2,16 +2,28 @@ package main
 
 import (
 	"Go-YuJian/control"
-	"Go-YuJian/fyne"
+	fyne2 "Go-YuJian/fyne"
+
 	_ "Go-YuJian/io"
 )
 
 func main() {
-	// fmt.Printf("Hello,Go-YuJian!")
-	window := fyne.Run()
-	fyne.Btn.Start.OnTapped = func() {
-		control.StartWork()
+	window := fyne2.GetWindow()
+	startBtn := fyne2.Btn.Start
+	stopBtn := fyne2.Btn.Stop
+	startBtn.OnTapped = func() {
+		startBtn.Disable()
+		stopBtn.Enable()
+		go func() {
+			control.StartWork()
+			stopBtn.Disable()
+			startBtn.Enable()
+		}()
+	}
+	stopBtn.OnTapped = func() {
+		control.StopWork()
+		stopBtn.Disable()
+		startBtn.Enable()
 	}
 	window.ShowAndRun()
-
 }
