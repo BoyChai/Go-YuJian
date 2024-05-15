@@ -30,22 +30,21 @@ func StartWork() {
 	}
 	// 向缓存中提交任务
 	go func() {
-		for {
-			if getURL() != "" {
-				for _, method := range fyne.Input.Method {
-					w <- workCfg{
-						Method: method,
-						URL:    getURL(),
-						Dict:   dict.GetDictName(),
-					}
+		for i := 0; i < int(dict.GetDictLine()); i++ {
+			url := getURL()
+			dictName := dict.GetDictName()
+			for _, method := range fyne.Input.Method {
+				w <- workCfg{
+					Method: method,
+					URL:    url,
+					Dict:   dictName,
 				}
 			}
 		}
-	}()
 
-	i := 0
+	}()
 	// 拿值
-	for i >= int(dict.GetDictLine()) {
+	for i := 0; i < int(dict.GetDictLine())*len(fyne.Input.Method); i++ {
 		results := <-r
 		if results.IsTrue {
 			fyne.Data = append(fyne.Data, results.Output)
@@ -75,8 +74,8 @@ func work(cfg chan workCfg, result chan workResults) {
 		if err != nil {
 			panic(err)
 		}
-		StatusCode := []string{"2xx", "3xx"}
-		for _, code := range StatusCode {
+		found := false
+		for _, code := range fyne.Input.StatusCode {
 			if fmt.Sprint(resp.StatusCode)[:1] == fmt.Sprint(code)[:1] {
 				bodyBytes, err := io.ReadAll(resp.Body)
 				if err != nil {
@@ -85,7 +84,7 @@ func work(cfg chan workCfg, result chan workResults) {
 				result <- workResults{
 					IsTrue: true,
 					Output: fyne.Output{
-						Code:      code,
+						Code:      fmt.Sprint(resp.StatusCode),
 						Method:    c.Method,
 						Size:      fmt.Sprint(len(bodyBytes)),
 						URL:       c.URL,
@@ -93,8 +92,11 @@ func work(cfg chan workCfg, result chan workResults) {
 						Dict:      c.Dict,
 					},
 				}
+				found = true
 				break
 			}
+		}
+		if !found {
 			result <- workResults{
 				IsTrue: false,
 			}
@@ -104,5 +106,5 @@ func work(cfg chan workCfg, result chan workResults) {
 
 func getURL() string {
 	dict.Next()
-	return fmt.Sprint(fyne.Input.URL, "/", dict.Value)
+	return fmt.Sprint(*fyne.Input.URL, dict.Value)
 }

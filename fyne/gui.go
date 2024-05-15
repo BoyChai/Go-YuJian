@@ -32,7 +32,7 @@ func init() {
 	os.Setenv("FYNE_FONT", fontPath)
 }
 
-func Run() {
+func Run() fyne.Window {
 	// 创建应用
 	a := app.New()
 	// 设置主题颜色
@@ -77,6 +77,6 @@ func Run() {
 
 	// 组件加载到窗口
 	window.SetContent(container.NewVBox(line1, line2, line3, line4))
+	return window
 
-	window.ShowAndRun()
 }
