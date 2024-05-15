@@ -93,6 +93,7 @@ func (i *input) DictListObject() fyne.CanvasObject {
 		},
 		func(id widget.ListItemID, item fyne.CanvasObject) {
 			check := item.(*fyne.Container).Objects[0].(*widget.Check)
+			check.OnChanged = nil
 			check.SetChecked(i.DictList[id].Active)
 			check.OnChanged = func(b bool) {
 				i.DictList[id].Active = b
