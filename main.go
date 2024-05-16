@@ -5,6 +5,8 @@ import (
 	fyne2 "Go-YuJian/fyne"
 	_ "Go-YuJian/io"
 	"Go-YuJian/utils"
+	"fmt"
+	"strings"
 
 	"fyne.io/fyne/v2/dialog"
 )
@@ -25,6 +27,10 @@ func main() {
 
 		if !utils.CheckDigits(*fyne2.Input.Timeout) {
 			dialog.ShowInformation("EROOR", "超时时间无效，请重新填写", window)
+			return
+		}
+		if !utils.HostExists(fmt.Sprintf(strings.Split(*fyne2.Input.URL, "//")[1])) {
+			dialog.ShowInformation("EROOR", "找不到URL主机", window)
 			return
 		}
 		startBtn.Disable()

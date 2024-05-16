@@ -5,6 +5,7 @@ import (
 	io2 "Go-YuJian/io"
 	"io"
 	"log"
+	"net"
 	"time"
 
 	"fmt"
@@ -102,7 +103,13 @@ func work() {
 
 			resp, err := client.Do(req)
 			if err != nil {
-				panic(err)
+				if err, ok := err.(net.Error); ok && err.Timeout() {
+					fmt.Println("请求超时:", err)
+				} else {
+					// 其他类型的错误
+					panic(err)
+				}
+				break
 			}
 			defer func() { _ = resp.Body.Close() }()
 			if err != nil {
