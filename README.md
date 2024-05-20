@@ -44,6 +44,8 @@ Firefox: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:125.0) Gecko/20100101 Fire
 
 本工具仅用于学习交流，禁止用于其他用途，否则后果自负。
 
+## 鸣谢
+感谢BaiPiao设计的图标，非常感谢。
 
 ## 捐助
 
