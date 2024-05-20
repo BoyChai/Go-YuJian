@@ -8,11 +8,15 @@ import (
 	"fmt"
 	"strings"
 
+	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/dialog"
 )
 
 func main() {
 	window := fyne2.GetWindow()
+	// 加载图标
+	icon, _ := fyne.LoadResourceFromPath("./static/icon.png")
+	window.SetIcon(icon)
 	startBtn := fyne2.Btn.Start
 	stopBtn := fyne2.Btn.Stop
 	startBtn.OnTapped = func() {
