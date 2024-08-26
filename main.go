@@ -33,7 +33,11 @@ func main() {
 			dialog.ShowInformation("EROOR", "超时时间无效，请重新填写", window)
 			return
 		}
-		if !utils.HostExists(fmt.Sprintf(strings.Split(*fyne2.Input.URL, "//")[1])) {
+		if !strings.Contains(*fyne2.Input.URL, "://") {
+			dialog.ShowInformation("EROOR", "未指定URL协议", window)
+			return
+		}
+		if !utils.HostExists(fmt.Sprintf(strings.Split(*fyne2.Input.URL, "://")[1])) {
 			dialog.ShowInformation("EROOR", "找不到URL主机", window)
 			return
 		}
