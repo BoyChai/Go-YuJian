@@ -59,7 +59,7 @@ func (i *input) TimeoutObject() fyne.CanvasObject {
 // StatusCode
 func (i *input) StatusCodeObject() fyne.CanvasObject {
 	label := widget.NewLabel("状态码:")
-	in := widget.NewCheckGroup([]string{"2xx", "3xx", "4xx", "5xx"}, func(s []string) { i.StatusCode = s })
+	in := widget.NewCheckGroup([]string{"2xx", "3xx", "403", "5xx"}, func(s []string) { i.StatusCode = s })
 	in.SetSelected([]string{"2xx"})
 	in.Horizontal = true
 	return container.New(layout.NewFormLayout(), label, in)

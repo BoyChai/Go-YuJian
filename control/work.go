@@ -117,6 +117,27 @@ func work() {
 			}
 			found := false
 			for _, code := range fyne.Input.StatusCode {
+				if fmt.Sprint(code) == "403" {
+					if fmt.Sprint(resp.StatusCode) == fmt.Sprint(code) {
+						bodyBytes, err := io.ReadAll(resp.Body)
+						if err != nil {
+							panic(err)
+						}
+						r <- workResults{
+							IsTrue: true,
+							Output: fyne.Output{
+								Code:      fmt.Sprint(resp.StatusCode),
+								Method:    c.Method,
+								Size:      fmt.Sprint(len(bodyBytes)),
+								URL:       c.URL,
+								UserAgent: agentType,
+								Dict:      c.Dict,
+							},
+						}
+						found = true
+					}
+					break
+				}
 				if fmt.Sprint(resp.StatusCode)[:1] == fmt.Sprint(code)[:1] {
 					bodyBytes, err := io.ReadAll(resp.Body)
 					if err != nil {
