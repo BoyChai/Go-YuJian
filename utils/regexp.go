@@ -2,11 +2,12 @@ package utils
 
 import (
 	"regexp"
+	"strings"
 )
 
 // URL校验
 func CheckURL(s string) bool {
-	reg := regexp.MustCompile(`^(https?://)?([\da-z\.-]+)\.([a-z\.]{2,6})([/\w \.-]*)*/?$`)
+	reg := regexp.MustCompile(`([hH][tT]{2}[pP]://|[hH][tT]{2}[pP][sS]://|[wW]{3}.|[wW][aA][pP].|[fF][tT][pP].|[fF][iI][lL][eE].)[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]`)
 	return reg.MatchString(s)
 }
 
@@ -14,4 +15,17 @@ func CheckURL(s string) bool {
 func CheckDigits(s string) bool {
 	reg := regexp.MustCompile(`^\d+$`)
 	return reg.MatchString(s)
+}
+
+// ExtractDomain 提取域名
+func ExtractDomain(url string) string {
+	splitURL := strings.Split(url, "://")
+	if len(splitURL) < 2 {
+		return ""
+	}
+
+	re := regexp.MustCompile(`^([a-zA-Z0-9.-]+)`)
+	match := re.FindString(splitURL[1])
+
+	return match
 }

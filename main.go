@@ -5,7 +5,6 @@ import (
 	fyne2 "Go-YuJian/fyne"
 	_ "Go-YuJian/io"
 	"Go-YuJian/utils"
-	"fmt"
 	"strings"
 
 	"fyne.io/fyne/v2"
@@ -37,7 +36,7 @@ func main() {
 			dialog.ShowInformation("EROOR", "未指定URL协议", window)
 			return
 		}
-		if !utils.HostExists(fmt.Sprintf(strings.Split(*fyne2.Input.URL, "://")[1])) {
+		if !utils.HostExists(utils.ExtractDomain(*fyne2.Input.URL)) {
 			dialog.ShowInformation("EROOR", "找不到URL主机", window)
 			return
 		}
