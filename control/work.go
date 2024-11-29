@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"net"
+	"strings"
 	"time"
 
 	"fmt"
@@ -92,7 +93,13 @@ func work() {
 			// 停止工作
 			return
 		default:
-			req, err := http.NewRequest(c.Method, c.URL, nil)
+			url := c.URL
+
+			if strings.Contains(url, "%") {
+				url = strings.ReplaceAll(url, "%", "%25")
+			}
+			fmt.Println(url)
+			req, err := http.NewRequest(c.Method, url, nil)
 			if err != nil {
 				fmt.Println("创建请求错误: ", err)
 			}

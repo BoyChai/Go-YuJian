@@ -60,7 +60,11 @@ func (d *dict) GetDictLine() int64 {
 func (d *dict) Next() {
 	d.open()
 	if d.sc.Scan() {
-		d.Value = d.sc.Text()
+		uri := d.sc.Text()
+		if len(uri) > 0 && uri[0] != '/' {
+			uri = "/" + uri
+		}
+		d.Value = uri
 		return
 	}
 	d.end = true
