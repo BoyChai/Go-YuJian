@@ -94,7 +94,7 @@ func work() {
 		default:
 			req, err := http.NewRequest(c.Method, c.URL, nil)
 			if err != nil {
-				panic(err)
+				fmt.Println("创建请求错误: ", err)
 			}
 			req.Header.Set("Referer", *fyne.Input.Referer)
 			req.Header.Set("Cookie", *fyne.Input.Cookie)
