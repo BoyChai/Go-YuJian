@@ -1,6 +1,8 @@
 package utils
 
 import (
+	"fmt"
+	"net/url"
 	"regexp"
 	"strings"
 )
@@ -28,4 +30,35 @@ func ExtractDomain(url string) string {
 	match := re.FindString(splitURL[1])
 
 	return match
+}
+
+// 保存文件的名字
+func GetSaveFileURLName(input string) string {
+	parsedURL, err := url.Parse(input)
+	if err != nil {
+		fmt.Println("Error parsing URL:", err)
+		return ""
+	}
+
+	scheme := parsedURL.Scheme
+	host := parsedURL.Hostname()
+	port := parsedURL.Port()
+
+	if scheme == "http" {
+		if port != "" {
+
+			return fmt.Sprintf("http_%s_%s", host, port)
+		}
+
+		return fmt.Sprintf("http_%s", host)
+	} else if scheme == "https" {
+		if port != "" {
+
+			return fmt.Sprintf("https_%s_%s", host, port)
+		}
+
+		return fmt.Sprintf("https_%s", host)
+	}
+
+	return ""
 }

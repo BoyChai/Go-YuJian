@@ -1,15 +1,19 @@
 package fyne
 
 import (
+	"Go-YuJian/utils"
 	"fmt"
 	"image/color"
+	"os"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
+	"github.com/gocarina/gocsv"
 )
 
 type input struct {
@@ -145,11 +149,76 @@ func (i *input) MethodObject() fyne.CanvasObject {
 	return container.New(layout.NewFormLayout(), label, in)
 }
 
+// ExportCSV
+func (i *input) ExportCSVBtn() fyne.CanvasObject {
+	Btn := widget.NewButton("导出CSV", func() {
+		if len(Data) == 0 {
+			dialog.ShowInformation("错误", "暂无数据,无法导出", utils.GetMainWindows())
+			return
+		}
+
+		// 创建一个新的切片用于存储转换后的数据
+		var exportData []ExportOutput
+
+		// 将原始数据转换为 ExportOutput 类型，并添加 ID
+		for index := range Data {
+			exportData = append(exportData, ExportOutput{
+				ID:        index + 1, // 给每行数据分配 ID 从 1 开始
+				Dict:      Data[index].Dict,
+				Method:    Data[index].Method,
+				UserAgent: Data[index].UserAgent,
+				Code:      Data[index].Code,
+				Size:      Data[index].Size,
+				URL:       Data[index].URL,
+			})
+		}
+
+		dl := dialog.NewFileSave(func(r fyne.URIWriteCloser, err error) {
+			if err != nil || r == nil {
+				fmt.Println(err)
+				return
+			}
+			// 获取选择的文件路径
+			filePath := r.URI().Path()
+
+			file, err := os.OpenFile(filePath, os.O_CREATE|os.O_WRONLY, 0644)
+			if err != nil {
+				fmt.Println("无法创建文件:", err)
+				return
+			}
+
+			// 使用 gocsv 写入 CSV
+			err = gocsv.MarshalFile(&exportData, file)
+			if err != nil {
+				fmt.Println("写入 CSV 时出错:", err)
+				return
+			}
+
+			ferr := file.Close()
+			if ferr != nil {
+				fmt.Println(ferr)
+			}
+			dialog.ShowInformation("成功", "CSV 文件已导出", utils.GetMainWindows())
+		}, utils.GetMainWindows())
+		dl.SetFileName(utils.GetSaveFileURLName(*i.URL) + ".csv")
+		dl.Show()
+	})
+	return Btn
+}
+
+// ClearData
+func (i *input) ClearDataBtn() fyne.CanvasObject {
+	Btn := widget.NewButton("清除数据", func() {
+		Data = Data[:0]
+	})
+	return Btn
+}
+
 // OtherSettings
 func (i *input) OtherSettingsObject() fyne.CanvasObject {
 	label := widget.NewLabel("Other Settings:")
 	//
-	in := container.NewScroll(container.NewVBox(i.UserAgentObject(), i.MethodObject()))
+	in := container.NewScroll(container.NewVBox(i.UserAgentObject(), i.MethodObject(), i.ExportCSVBtn(), i.ClearDataBtn()))
 
 	// 设置容器的最小尺寸
 	inScroller := container.NewVScroll(in)

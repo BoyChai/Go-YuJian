@@ -53,5 +53,6 @@ func main() {
 		stopBtn.Disable()
 		startBtn.Enable()
 	}
+	utils.SetMainWindows(window)
 	window.ShowAndRun()
 }
